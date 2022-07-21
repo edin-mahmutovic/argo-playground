@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-addons
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/edin-mahmutovic/argo-playground.git
+      revision: HEAD
+      directories:
+      - path: 'cluster-addons/{{values.namespace}}/*'
+  - list:
+      elements:
+        - namespace: istio-system
+        - namespace: monitoring
+        - namespace: logging
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/edin-mahmutovic/argo-playground.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{values.namespace}}'
