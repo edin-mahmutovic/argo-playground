@@ -8,12 +8,9 @@ spec:
       repoURL: https://github.com/edin-mahmutovic/argo-playground.git
       revision: HEAD
       directories:
-      - path: 'cluster-addons/{{values.namespace}}/*'
-  - list:
-      elements:
-        - namespace: istio-system
-        - namespace: monitoring
-        - namespace: logging
+      - path: cluster-addons/istio-system/*
+      - path: cluster-addons/logging/*
+      - path: cluster-addons/monitoring/*
   template:
     metadata:
       name: '{{path.basename}}'
@@ -25,4 +22,4 @@ spec:
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{values.namespace}}'
+        namespace: '{{path[1]}}'
