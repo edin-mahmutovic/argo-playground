@@ -2,15 +2,28 @@ nri-bundle:
   global:
       licenseKey: 68113000024d8dcd33fb6acf75f058cc33c564cb
       cluster: dev-platform
-    infrastructure:
-      enabled: true
-    prometheus:
-      enabled: true
-    webhook:
-      enabled: true
-    ksm:
-      enabled: true
-    kubeEvents:
-      enabled: true
-    logging:
-      enabled: false
+  infrastructure:
+    enabled: true
+  prometheus:
+    enabled: true
+  webhook:
+    enabled: true
+  ksm:
+    enabled: true
+  kubeEvents:
+    enabled: true
+  logging:
+    enabled: false
+
+kube-state-metrics:
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+  resources:
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi

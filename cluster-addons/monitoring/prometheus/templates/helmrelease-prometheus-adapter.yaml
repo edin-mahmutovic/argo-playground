@@ -1,0 +1,96 @@
+# Chart values https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-adapter/values.yaml
+# Walkthrough https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/walkthrough.md
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: prometheus-adapter
+  namespace: metrics
+spec:
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+  test:
+    enable: true
+  chart:
+    spec:
+      chart: prometheus-adapter
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+      version: '>=2.8.0 <4.0.0'
+  interval: 1440m
+  values:
+    # image:
+    #   tag: v0.7.0 # Required to keep external-secrets from failing. Higher versions alter the api. This may be fixed later, check https://github.com/external-secrets/kubernetes-external-secrets/issues/576
+    prometheus:
+      # Value is templated
+      url: "http://kube-prometheus-stack-prometheus.metrics"
+      port: 9090
+      path: ""
+    replicas: 1
+    rbac:
+      # Specifies whether RBAC resources should be created
+      create: true
+    serviceAccount:
+      create: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    rules:
+      default: true
+      custom: []
+    # - seriesQuery: '{__name__=~"^some_metric_count$"}'
+    #   resources:
+    #     template: <<.Resource>>
+    #   name:
+    #     matches: ""
+    #     as: "my_custom_metric"
+    #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+      # Mounts a configMap with pre-generated rules for use. Overrides the
+      # default, custom, external and resource entries
+      existing:
+      external: []
+    # - seriesQuery: '{__name__=~"^some_metric_count$"}'
+    #   resources:
+    #     template: <<.Resource>>
+    #   name:
+    #     matches: ""
+    #     as: "my_external_metric"
+    #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+      resource: {}
+    #   cpu:
+    #     containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>}[3m])) by (<<.GroupBy>>)
+    #     nodeQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id='/'}[3m])) by (<<.GroupBy>>)
+    #     resources:
+    #       overrides:
+    #         instance:
+    #           resource: node
+    #         namespace:
+    #           resource: namespace
+    #         pod:
+    #           resource: pod
+    #     containerLabel: container
+    #   memory:
+    #     containerQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+    #     nodeQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>,id='/'}) by (<<.GroupBy>>)
+    #     resources:
+    #       overrides:
+    #         instance:
+    #           resource: node
+    #         namespace:
+    #           resource: namespace
+    #         pod:
+    #           resource: pod
+    #     containerLabel: container
+    #   window: 3m
+    service:
+      annotations: {}
+      port: 443
+      type: ClusterIP

@@ -1,0 +1,89 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: prometheus-community
+  namespace: metrics
+spec:
+  interval: 1440m
+  url: https://prometheus-community.github.io/helm-charts
+---
+# Chart values https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml
+# Configuration Docs https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: prometheus-community
+  namespace: metrics
+spec:
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+  test:
+    enable: true
+  chart:
+    spec:
+      chart: prometheus
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+      version: '>=13.0.2 <16.0.0'
+  interval: 1440m
+  values:
+    rbac:
+      create: true
+    serviceAccounts:
+      server:
+        create: true
+      nodeExporter:
+        create: true
+      pushgateway:
+        create: true
+      alertmanager:
+        create: true
+    alertmanager:
+      enabled: true
+      baseURL: "http://localhost:9093"
+      configMapOverrideName: "alertmanager-config"
+      resources:
+        limits:
+          cpu: 10m
+          memory: 32Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+    nodeExporter:
+      enabled: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 50Mi
+        requests:
+          cpu: 100m
+          memory: 30Mi
+    server:
+      configMapOverrideName: "server-config"
+      retention: "7d"
+      enabled: true
+      resources:
+        limits:
+          cpu: 1500m
+          memory: 2Gi
+        requests:
+          cpu: 500m
+          memory: 512Mi
+    pushgateway:
+      image:
+        repository: quay.io/prometheus/pushgateway
+        tag: v1.4.0
+        pullPolicy: IfNotPresent
+      enabled: true
+      resources:
+        limits:
+          cpu: 10m
+          memory: 32Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
