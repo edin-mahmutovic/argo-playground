@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prometheus
+  name: newrelic
   labels:
-    app: prometheus
+    app: newrelic
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: prometheus
+      app: newrelic
   template:
     metadata:
       labels:
-        app: prometheus
+        app: newrelic
     spec:
       containers:
-      - name: prometheus
+      - name: newrelic
         image: nginx:1.14.2
         ports:
         - containerPort: 80
