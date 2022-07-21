@@ -1,0 +1,10 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: fluent-bit
+  namespace: logging
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      k8s-app: fluent-bit-logging
