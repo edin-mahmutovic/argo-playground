@@ -1,0 +1,16 @@
+nri-bundle:
+  global:
+      licenseKey: 68113000024d8dcd33fb6acf75f058cc33c564cb
+      cluster: dev-platform
+    infrastructure:
+      enabled: true
+    prometheus:
+      enabled: true
+    webhook:
+      enabled: true
+    ksm:
+      enabled: true
+    kubeEvents:
+      enabled: true
+    logging:
+      enabled: false
