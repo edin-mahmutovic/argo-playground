@@ -3,3 +3,10 @@ description: A Helm chart for Spring Boot Application
 name: newrelic
 type: application
 version: 0.0.1
+dependencies:
+  - name: nri-bundle
+    version: ">=2.1.2 <3.0.0"
+    repository: https://helm-charts.newrelic.com
+  - name: kube-state-metrics
+    version: ">=3.0.0 <4.0.0"
+    repository: https://prometheus-community.github.io/helm-charts
