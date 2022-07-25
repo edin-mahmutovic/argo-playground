@@ -4,8 +4,8 @@ metadata:
   name: prometheus-community-server-config
   namespace: metrics
 data:
-  alerting_rules.yml: |
-    groups:
+  alerting_rules.yml: |-
+    {{`groups:
       - name: self-monitoring
         rules:
         - alert: PrometheusNotConnectedToAlertmanager
@@ -14,8 +14,8 @@ data:
           labels:
             severity: critical
           annotations:
-            summary: "Prometheus not connected to alertmanager (instance `{{ $labels.instance }}`)"
-            description: "Prometheus cannot connect the alertmanager\n  VALUE = `{{ $value }}\n  LABELS: {{ $labels }}`"
+            summary: "Prometheus not connected to alertmanager (instance {{ $labels.instance }})"
+            description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
         - alert: PrometheusConfigurationReloadFailure
           expr: prometheus_config_last_reload_successful != 1
           for: 0m
@@ -347,7 +347,7 @@ data:
             severity: warning
           annotations:
             summary: "Istio latency 99 percentile (instance {{ $labels.instance }})"
-            description: "Istio 1% slowest resquests are longer than 1s.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+            description: "Istio 1% slowest resquests are longer than 1s.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"`}}
   alerts: |
     {}
   prometheus.yml: |
