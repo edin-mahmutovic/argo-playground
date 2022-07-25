@@ -8,8 +8,8 @@ spec:
       repoURL: https://github.com/edin-mahmutovic/argo-playground.git
       revision: HEAD
       directories:
-      - path: cluster-addons/istio-system/*
-      - path: cluster-addons/logging/*
+      #- path: cluster-addons/istio-system/*
+      #- path: cluster-addons/logging/*
       - path: cluster-addons/metrics/*
   template:
     metadata:
