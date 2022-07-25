@@ -1,3 +1,129 @@
+prometheus:
+  rbac:
+    create: true
+  serviceAccounts:
+    server:
+      create: true
+    nodeExporter:
+      create: true
+    pushgateway:
+      create: true
+    alertmanager:
+      create: true
+  alertmanager:
+    enabled: true
+    baseURL: "http://localhost:9093"
+    configMapOverrideName: "alertmanager-config"
+    resources:
+      limits:
+        cpu: 10m
+        memory: 32Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+  nodeExporter:
+    enabled: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
+  server:
+    configMapOverrideName: "server-config"
+    retention: "7d"
+    enabled: true
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  pushgateway:
+    image:
+      repository: quay.io/prometheus/pushgateway
+      tag: v1.4.0
+      pullPolicy: IfNotPresent
+    enabled: true
+    resources:
+      limits:
+        cpu: 10m
+        memory: 32Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+####################
+prometheus-adapter:
+  prometheus:
+    url: "http://kube-prometheus-stack-prometheus.metrics"
+    port: 9090
+    path: ""
+  replicas: 1
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  rules:
+    default: true
+    custom: []
+  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
+  #   resources:
+  #     template: <<.Resource>>
+  #   name:
+  #     matches: ""
+  #     as: "my_custom_metric"
+  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+    # Mounts a configMap with pre-generated rules for use. Overrides the
+    # default, custom, external and resource entries
+    existing:
+    external: []
+  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
+  #   resources:
+  #     template: <<.Resource>>
+  #   name:
+  #     matches: ""
+  #     as: "my_external_metric"
+  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+    resource: {}
+  #   cpu:
+  #     containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>}[3m])) by (<<.GroupBy>>)
+  #     nodeQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id='/'}[3m])) by (<<.GroupBy>>)
+  #     resources:
+  #       overrides:
+  #         instance:
+  #           resource: node
+  #         namespace:
+  #           resource: namespace
+  #         pod:
+  #           resource: pod
+  #     containerLabel: container
+  #   memory:
+  #     containerQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+  #     nodeQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>,id='/'}) by (<<.GroupBy>>)
+  #     resources:
+  #       overrides:
+  #         instance:
+  #           resource: node
+  #         namespace:
+  #           resource: namespace
+  #         pod:
+  #           resource: pod
+  #     containerLabel: container
+  #   window: 3m
+  service:
+    annotations: {}
+    port: 443
+    type: ClusterIP
+###################
 kube-prometheus-stack:
   defaultRules:
     create: false
@@ -331,131 +457,3 @@ kube-prometheus-stack:
   ##
   prometheus:
     enabled: false
-
-prometheus-community:
-  rbac:
-    create: true
-  serviceAccounts:
-    server:
-      create: true
-    nodeExporter:
-      create: true
-    pushgateway:
-      create: true
-    alertmanager:
-      create: true
-  alertmanager:
-    enabled: true
-    baseURL: "http://localhost:9093"
-    configMapOverrideName: "alertmanager-config"
-    resources:
-      limits:
-        cpu: 10m
-        memory: 32Mi
-      requests:
-        cpu: 10m
-        memory: 32Mi
-  nodeExporter:
-    enabled: true
-    resources:
-      limits:
-        cpu: 200m
-        memory: 50Mi
-      requests:
-        cpu: 100m
-        memory: 30Mi
-  server:
-    configMapOverrideName: "server-config"
-    retention: "7d"
-    enabled: true
-    resources:
-      limits:
-        cpu: 1500m
-        memory: 2Gi
-      requests:
-        cpu: 500m
-        memory: 512Mi
-  pushgateway:
-    image:
-      repository: quay.io/prometheus/pushgateway
-      tag: v1.4.0
-      pullPolicy: IfNotPresent
-    enabled: true
-    resources:
-      limits:
-        cpu: 10m
-        memory: 32Mi
-      requests:
-        cpu: 10m
-        memory: 32Mi
-
-prometheus-adapter:
-  prometheus:
-    # Value is templated
-    url: "http://kube-prometheus-stack-prometheus.metrics"
-    port: 9090
-    path: ""
-  replicas: 1
-  rbac:
-    # Specifies whether RBAC resources should be created
-    create: true
-  serviceAccount:
-    create: true
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
-  rules:
-    default: true
-    custom: []
-  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
-  #   resources:
-  #     template: <<.Resource>>
-  #   name:
-  #     matches: ""
-  #     as: "my_custom_metric"
-  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
-    # Mounts a configMap with pre-generated rules for use. Overrides the
-    # default, custom, external and resource entries
-    existing:
-    external: []
-  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
-  #   resources:
-  #     template: <<.Resource>>
-  #   name:
-  #     matches: ""
-  #     as: "my_external_metric"
-  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
-    resource: {}
-  #   cpu:
-  #     containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>}[3m])) by (<<.GroupBy>>)
-  #     nodeQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id='/'}[3m])) by (<<.GroupBy>>)
-  #     resources:
-  #       overrides:
-  #         instance:
-  #           resource: node
-  #         namespace:
-  #           resource: namespace
-  #         pod:
-  #           resource: pod
-  #     containerLabel: container
-  #   memory:
-  #     containerQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>}) by (<<.GroupBy>>)
-  #     nodeQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>,id='/'}) by (<<.GroupBy>>)
-  #     resources:
-  #       overrides:
-  #         instance:
-  #           resource: node
-  #         namespace:
-  #           resource: namespace
-  #         pod:
-  #           resource: pod
-  #     containerLabel: container
-  #   window: 3m
-  service:
-    annotations: {}
-    port: 443
-    type: ClusterIP

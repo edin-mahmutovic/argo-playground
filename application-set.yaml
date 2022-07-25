@@ -10,7 +10,7 @@ spec:
       directories:
       - path: cluster-addons/istio-system/*
       - path: cluster-addons/logging/*
-      - path: cluster-addons/monitoring/*
+      - path: cluster-addons/metrics/*
   template:
     metadata:
       name: '{{path.basename}}'
